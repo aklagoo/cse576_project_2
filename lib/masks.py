@@ -36,7 +36,7 @@ def mask_1d(sentence: str) -> Generator[Sample, None, None]:
         text = match.group()
 
         # Replace match with mask token
-        masked = sentence[:start] + config.MASK_TOKEN % 0 + sentence[end:]
+        masked = sentence[:start] + config.MASK_TOKEN.format(0) + sentence[end:]
         label = config.MASK_TOKEN.format(0) + " " + text + " " + config.MASK_TOKEN.format(1)
 
         # Append sample
