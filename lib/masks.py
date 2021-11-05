@@ -3,12 +3,16 @@
 A masking function masks parts of an input sentence as defined in
 """
 import re
-from lib.dataset import Sample
 from lib import config
-from typing import List
+from typing import Generator, NamedTuple
 
 
-def mask_1d(sentence: str) -> List[Sample]:
+class Sample(NamedTuple):
+    sent: str
+    label: str
+
+
+def mask_1d(sentence: str) -> Generator[Sample, None, None]:
     """Masks a single digit.
 
     Example:
@@ -36,9 +40,7 @@ def mask_1d(sentence: str) -> List[Sample]:
         label = config.MASK_TOKEN.format(0) + " " + text + " " + config.MASK_TOKEN.format(1)
 
         # Append sample
-        samples.append(Sample(sent=masked, label=label))
-
-    return samples
+        yield Sample(sent=masked, label=label)
 
 
 masks = {

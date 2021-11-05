@@ -8,13 +8,7 @@ from lib import config, formats, masks
 import tables
 from itertools import product
 from tables.table import Table
-from typing import List, NamedTuple, Union, Tuple, Dict
-
-
-# Define data formats
-class Sample(NamedTuple):
-    sent: str
-    label: str
+from typing import List, NamedTuple, Union, Dict
 
 
 class SampleTable(tables.IsDescription):
