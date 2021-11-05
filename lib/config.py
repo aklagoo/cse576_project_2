@@ -5,7 +5,5 @@ TASKS = {
     "maximum": max,
 }
 DATASET_COLS = ["feature", "label"]
-DATASET_PATH = "../data/raw/dataset.hdf5"
-SENT_FORMATS = [
-    "The {task} value among {nums_str} is {nums_target}.",
-]
+DATASET_PATH = "../data/raw/dataset.h5"
+MASK_TOKEN = "extra_id_{0}"
