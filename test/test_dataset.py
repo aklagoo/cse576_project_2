@@ -25,3 +25,7 @@ class DatasetCombineIter(unittest.TestCase):
                 break
 
         self.assertTrue(is_in, "should generate all possible combinations.")
+
+
+class DatasetGenerateRandom(unittest.TestCase):
+    pass
