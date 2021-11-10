@@ -44,5 +44,5 @@ def mask_1d(sentence: str) -> Generator[Sample, None, None]:
 
 
 masks = {
-    '1d': mask_1d,
+    'mask_1d': mask_1d,
 }

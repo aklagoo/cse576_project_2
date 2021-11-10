@@ -16,7 +16,7 @@ def format_1(task_name: str, nums: List[int], target: int) -> str:
     """Returns a sentence with format 1.
 
     Example:
-        The maximum value among 1, 2, 3, 4, 5 is 5.
+        The maximum value among 1, 2, 3, 4, and 5 is 5.
     """
     # Stringify the list.
     nums_str = ", ".join([str(num) for num in nums[:-1]]) + ", and " + str(nums[-1])

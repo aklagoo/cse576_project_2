@@ -11,7 +11,7 @@ import tables
 from itertools import product
 from tables.table import Table
 from lib.masks import Sample
-from typing import List, Tuple, Union, Dict, Generator, Callable
+from typing import List, Tuple, Union, Dict, Generator
 
 
 class SampleTable(tables.IsDescription):
@@ -95,10 +95,13 @@ def _parse_params(sent_formats: Union[str, List[str]], sent_masks: Union[str, Li
     return sent_formats_, sent_masks_
 
 
-def _generate_samples_all(sent_format: str, sent_mask: str, task_name: str) -> Generator[Sample, None, None]:
+def _generate_samples_all(
+        sent_format: str, sent_mask: str, task_name: str,
+        val_range: Tuple[int, int], len_range: Tuple[int, int])\
+        -> Generator[Sample, None, None]:
     # Generate examples
-    start, end = config.NUMS_LEN_RANGE
-    data = list(range(*config.NUMS_VAL_RANGE))
+    start, end = len_range
+    data = list(range(*val_range))
     combinations = list(map(lambda x: [x], data))
 
     # Create initial data
@@ -106,7 +109,7 @@ def _generate_samples_all(sent_format: str, sent_mask: str, task_name: str) -> G
         combinations = _combine_iter(combinations, data)
 
     # Generate tasks for combinations
-    for _ in range(start, end + 1):
+    for _ in range(start, end):
         combinations = _combine_iter(combinations, data)
 
         # For each combination, generate all samples
@@ -122,6 +125,8 @@ def _generate_samples_all(sent_format: str, sent_mask: str, task_name: str) -> G
 
 
 def generate_all(
+        val_range: Tuple[int, int] = config.NUMS_VAL_RANGE,
+        len_range: Tuple[int, int] = config.NUMS_LEN_RANGE,
         path: str = config.DATASET_PATH, rewrite: bool = False,
         sent_formats: Union[str, List[str]] = 'all',
         sent_masks: Union[str, List[str]] = 'all',
@@ -142,6 +147,8 @@ def generate_all(
             ...
 
     Args:
+        val_range: Tuple [start, end) representing the range of values.
+        len_range: Tuple [start, end) representing the range of sample lengths.
         path: Path to the dataset.
         rewrite: If set, existing tables are deleted and reinitialized.
         sent_formats: One or more sentence formats.
@@ -165,7 +172,7 @@ def generate_all(
 
             # Create train-val-test tables
             data_tables = _create_tables(h5file, sent_format, sent_mask, rewrite)
-            for sample in _generate_samples_all(sent_format, sent_mask, task_name):
+            for sample in _generate_samples_all(sent_format, sent_mask, task_name, val_range, len_range):
                 # Pick row and append a sample
                 row, table_type = _get_row(data_tables, counts, split)
                 row['sent'] = sample.sent
@@ -178,24 +185,28 @@ def generate_all(
             table.flush()
 
 
-def _generate_samples_random(count: int, sent_format: str, sent_mask: str, task_name: str):
+def _generate_samples_random(
+        count: int, sent_format: str, sent_mask: str, task_name: str,
+        val_range: Tuple[int, int], len_range: Tuple[int, int])\
+        -> Generator[Sample, None, None]:
     for _ in range(count):
         # Generate random length
-        nums_l = random.randint(*config.NUMS_LEN_RANGE)
-        nums = [random.randint(*config.NUMS_VAL_RANGE) for _ in range(nums_l)]
+        nums_l = random.randrange(*len_range)
+        nums = [random.randrange(*val_range) for _ in range(nums_l)]
 
         # Generate samples for combination
         target = config.TASKS[task_name](nums)
         sentence = formats.formats[sent_format](task_name, nums, target)
         samples = masks.masks[sent_mask](sentence)
 
-        # Write samples to table
-        for sample in samples:
-            yield sample
+        # Yield a single sample
+        yield random.choice(list(samples))
 
 
 def generate_random(
-        count: int, path: str = config.DATASET_PATH, rewrite: bool = False,
+        count: int, val_range: Tuple[int, int] = config.NUMS_VAL_RANGE,
+        len_range: Tuple[int, int] = config.NUMS_LEN_RANGE,
+        path: str = config.DATASET_PATH, rewrite: bool = False,
         sent_formats: Union[str, List[str]] = 'all',
         sent_masks: Union[str, List[str]] = 'all',
         split: Dict[str, float] = config.SPLIT):
@@ -206,6 +217,8 @@ def generate_random(
 
     Args:
         count: The number of samples.
+        val_range: Tuple [start, end) representing the range of values.
+        len_range: Tuple [start, end) representing the range of sample lengths.
         path: Path to the dataset.
         rewrite: If set, existing tables are deleted and reinitialized.
         sent_formats: One or more sentence formats.
@@ -229,7 +242,7 @@ def generate_random(
 
             # Create train-val-test tables
             data_tables = _create_tables(h5file, sent_format, sent_mask, rewrite)
-            for sample in _generate_samples_random(count, sent_format, sent_mask, task_name):
+            for sample in _generate_samples_random(count, sent_format, sent_mask, task_name, val_range, len_range):
                 # Pick row and append a sample
                 row, table_type = _get_row(data_tables, counts, split)
                 row['sent'] = sample.sent
