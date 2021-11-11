@@ -6,11 +6,11 @@ stored as a separate table, named with the format {sent_format}_{sent_mask}.
 """
 import random
 
-from lib import config, formats, masks
+from src import config, formats, masks
 import tables
 from itertools import product
 from tables.table import Table
-from lib.masks import Sample
+from src.masks import Sample
 from typing import List, Tuple, Union, Dict, Generator
 
 
@@ -259,5 +259,8 @@ def load_datasets(
         path: str = config.DATASET_PATH,
         sent_formats: Union[str, List[str]] = 'all',
         sent_masks: Union[str, List[str]] = 'all') -> Dict[str, Table]:
-    # TODO Fill stub
+    # Check arguments
+    sent_formats_, sent_masks_ = _parse_params(sent_formats, sent_masks)
+
+
     return {}

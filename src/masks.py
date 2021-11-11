@@ -3,7 +3,7 @@
 A masking function masks parts of an input sentence as defined in
 """
 import re
-from lib import config
+from src import config
 from typing import Generator, NamedTuple
 
 

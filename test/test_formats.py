@@ -1,5 +1,5 @@
 import unittest
-from lib import formats
+from src import formats
 
 
 class Format1(unittest.TestCase):
