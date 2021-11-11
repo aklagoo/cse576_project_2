@@ -1,5 +1,5 @@
 import unittest
-from src import dataset, masks
+from src.data import dataset, masks
 
 
 class DatasetCombineIter(unittest.TestCase):

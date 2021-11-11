@@ -1,6 +1,6 @@
 import unittest
-from src import masks
-from src.masks import Sample
+from src.data import masks
+from src.data.masks import Sample
 
 
 class Mask1d(unittest.TestCase):

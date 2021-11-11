@@ -6,11 +6,11 @@ stored as a separate table, named with the format {sent_format}_{sent_mask}.
 """
 import random
 
-from src import config, formats, masks
+from src.data import config, formats, masks
 import tables
 from itertools import product
 from tables.table import Table
-from src.masks import Sample
+from src.data.masks import Sample
 from typing import List, Tuple, Union, Dict, Generator
 
 
