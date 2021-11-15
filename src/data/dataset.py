@@ -6,7 +6,8 @@ stored as a separate table, named with the format {sent_format}_{sent_mask}.
 """
 import random
 
-from src.data import config, formats, masks
+from src.data import formats, masks
+from src import config
 import tables
 from itertools import product
 from tables.table import Table
@@ -38,20 +39,20 @@ def _create_tables(h5file, sent_format, sent_mask, rewrite) -> Dict[str, Table]:
         if not rewrite:
             raise KeyError("Table already exists")
         else:
-            h5file.root.datasets[group_name].remove()
+            h5file.root.datasets[group_name]['train'].remove()
     if f"/datasets/{group_name}/val" in h5file:
         if not rewrite:
             raise KeyError("Table already exists")
         else:
-            h5file.root.datasets[group_name].remove()
+            h5file.root.datasets[group_name]['val'].remove()
     if f"/datasets/{group_name}/test" in h5file:
         if not rewrite:
             raise KeyError("Table already exists")
         else:
-            h5file.root.datasets[group_name].remove()
+            h5file.root.datasets[group_name]['test'].remove()
 
     # Create group and tables
-    h5file.create_group(f"/datasets/{group_name}", group_name, group_name)
+    h5file.create_group(f"/datasets", group_name, group_name)
     data_tables = {
         'train': h5file.create_table(h5file.root.datasets[group_name], 'train', SampleTable, 'train'),
         'val': h5file.create_table(h5file.root.datasets[group_name], 'val', SampleTable, 'val'),
@@ -63,8 +64,8 @@ def _create_tables(h5file, sent_format, sent_mask, rewrite) -> Dict[str, Table]:
 def _get_row(data_tables, counts, split: Dict[str, float]):
     """Returns the row of the table that's lacking the most samples."""
     count_total = max(1, sum(counts.values()))
-    caps = {table_type: split[table_type] * count_total - count for table_type, count in counts}
-    table_type = max(caps, caps.get)
+    caps = {table_type: split[table_type] * count_total - count for table_type, count in counts.items()}
+    table_type = max(caps, key=caps.get)
     row = data_tables[table_type].row
     return row, table_type
 
@@ -165,20 +166,20 @@ def generate_all(
             h5file.create_group('/', 'datasets', 'Datasets')
 
         # Generate all task-format-mask pairs
-        for task_name, sent_format, sent_mask in product(
-                config.TASKS.keys(), sent_formats_, sent_masks_):
+        for sent_format, sent_mask in product(sent_formats_, sent_masks_):
             # Initialize counts
             counts = {'train': 0, 'val': 0, 'test': 0}
 
             # Create train-val-test tables
             data_tables = _create_tables(h5file, sent_format, sent_mask, rewrite)
-            for sample in _generate_samples_all(sent_format, sent_mask, task_name, val_range, len_range):
-                # Pick row and append a sample
-                row, table_type = _get_row(data_tables, counts, split)
-                row['sent'] = sample.sent
-                row['label'] = sample.label
-                row.append()
-                counts[table_type] += 1
+            for task_name in config.TASKS.keys():
+                for sample in _generate_samples_all(sent_format, sent_mask, task_name, val_range, len_range):
+                    # Pick row and append a sample
+                    row, table_type = _get_row(data_tables, counts, split)
+                    row['sent'] = sample.sent
+                    row['label'] = sample.label
+                    row.append()
+                    counts[table_type] += 1
 
         # Flush tables
         for table in data_tables.values():
@@ -235,20 +236,21 @@ def generate_random(
             h5file.create_group('/', 'datasets', 'Datasets')
 
         # Generate all task-format-mask pairs
-        for task_name, sent_format, sent_mask in product(
-                config.TASKS.keys(), sent_formats_, sent_masks_):
+        for sent_format, sent_mask in product(
+                sent_formats_, sent_masks_):
             # Initialize counts
             counts = {'train': 0, 'val': 0, 'test': 0}
 
             # Create train-val-test tables
             data_tables = _create_tables(h5file, sent_format, sent_mask, rewrite)
-            for sample in _generate_samples_random(count, sent_format, sent_mask, task_name, val_range, len_range):
-                # Pick row and append a sample
-                row, table_type = _get_row(data_tables, counts, split)
-                row['sent'] = sample.sent
-                row['label'] = sample.label
-                row.append()
-                counts[table_type] += 1
+            for task_name in config.TASKS.keys():
+                for sample in _generate_samples_random(count, sent_format, sent_mask, task_name, val_range, len_range):
+                    # Pick row and append a sample
+                    row, table_type = _get_row(data_tables, counts, split)
+                    row['sent'] = sample.sent
+                    row['label'] = sample.label
+                    row.append()
+                    counts[table_type] += 1
 
         # Flush tables
         for table in data_tables.values():
@@ -258,9 +260,15 @@ def generate_random(
 def load_datasets(
         path: str = config.DATASET_PATH,
         sent_formats: Union[str, List[str]] = 'all',
-        sent_masks: Union[str, List[str]] = 'all') -> Dict[str, Table]:
-    # Check arguments
+        sent_masks: Union[str, List[str]] = 'all') -> (tables.File, Dict[str, Table]):
+    # Load file
+    h5file = tables.open_file(path, mode="r")
+
+    # Return tables
+    datasets = {}
     sent_formats_, sent_masks_ = _parse_params(sent_formats, sent_masks)
+    for sent_format, sent_mask in product(sent_formats_, sent_masks_):
+        group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format, sent_mask=sent_mask)
+        datasets[sent_format][sent_mask] = h5file.datasets[group_name]
 
-
-    return {}
+    return h5file, datasets

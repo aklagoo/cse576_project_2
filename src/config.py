@@ -1,3 +1,7 @@
+import os
+
+cwd = os.getcwd()
+
 NUMS_VAL_RANGE = (0, 100)
 NUMS_LEN_RANGE = (5, 10)
 TASKS = {
@@ -5,7 +9,7 @@ TASKS = {
     "maximum": max,
 }
 DATASET_COLS = ["feature", "label"]
-DATASET_PATH = "../data/pretrain/dataset.h5"
+DATASET_PATH = os.path.join(cwd, "data/pretrain/dataset.h5")
 MASK_TOKEN = "<extra_id_{0}>"
-
 SPLIT = {'train': 0.7, 'val': 0.1, 'test': 0.2}
+DATASET_REWRITE = True
