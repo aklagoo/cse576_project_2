@@ -34,22 +34,10 @@ def _create_tables(h5file, sent_format, sent_mask, rewrite) -> Dict[str, Table]:
     """Creates train-val-test tables for a format-mask pair."""
     group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format, sent_mask=sent_mask)
 
-    # Remove tables if they exist
-    if f"/datasets/{group_name}/train" in h5file:
-        if not rewrite:
-            raise KeyError("Table already exists")
-        else:
-            h5file.root.datasets[group_name]['train'].remove()
-    if f"/datasets/{group_name}/val" in h5file:
-        if not rewrite:
-            raise KeyError("Table already exists")
-        else:
-            h5file.root.datasets[group_name]['val'].remove()
-    if f"/datasets/{group_name}/test" in h5file:
-        if not rewrite:
-            raise KeyError("Table already exists")
-        else:
-            h5file.root.datasets[group_name]['test'].remove()
+    # Remove group if it exists
+    if group_name in h5file.root.datasets:
+        if rewrite:
+            h5file.remove_node("/datasets", group_name)
 
     # Create group and tables
     h5file.create_group(f"/datasets", group_name, group_name)
