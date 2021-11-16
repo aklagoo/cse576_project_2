@@ -12,7 +12,7 @@ class Sample(NamedTuple):
     label: str
 
 
-def mask_1d(sentence: str) -> Generator[Sample, None, None]:
+def mask_1d(sentence: str, target:int) -> Generator[Sample, None, None]:
     """Masks a single digit.
 
     Example:
@@ -20,11 +20,11 @@ def mask_1d(sentence: str) -> Generator[Sample, None, None]:
         Masked: The maximum of 1, 2, <extra_id_0>5, 7, 8 is 35.
 
     Args:
-        sentence: A sentence to be masked.
+        sentence: A sentence to be masked and its target value.
     Returns:
         List of samples, such that each sample contains
             sent: A masked sentence.
-            targets: The masked part(s) of the input.
+            targets: return the target.
     """
     samples = []
 
@@ -37,7 +37,7 @@ def mask_1d(sentence: str) -> Generator[Sample, None, None]:
 
         # Replace match with mask token
         masked = sentence[:start] + config.MASK_TOKEN.format(0) + sentence[end:]
-        label = config.MASK_TOKEN.format(0) + " " + text + " " + config.MASK_TOKEN.format(1)
+        label = str(target)
 
         # Append sample
         yield Sample(sent=masked, label=label)
