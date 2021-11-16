@@ -105,8 +105,8 @@ def _generate_samples_all(
         for combination in combinations:
             # Generate samples for combination
             target = config.TASKS[task_name](combination)
-            sentence = formats.formats[sent_format](task_name, combination, target)
-            samples = masks.masks[sent_mask](sentence)
+            sentence,target_val = formats.formats[sent_format](task_name, combination, target)
+            samples = masks.masks[sent_mask](sentence,target_val)
 
             # Write samples to table
             for sample in samples:
@@ -185,9 +185,8 @@ def _generate_samples_random(
 
         # Generate samples for combination
         target = config.TASKS[task_name](nums)
-        sentence = formats.formats[sent_format](task_name, nums, target)
-        samples = masks.masks[sent_mask](sentence)
-
+        sentence,target_val = formats.formats[sent_format](task_name, nums, target)
+        samples = masks.masks[sent_mask](sentence,target_val)
         # Yield a single sample
         yield random.choice(list(samples))
 
@@ -257,6 +256,6 @@ def load_datasets(
     sent_formats_, sent_masks_ = _parse_params(sent_formats, sent_masks)
     for sent_format, sent_mask in product(sent_formats_, sent_masks_):
         group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format, sent_mask=sent_mask)
-        datasets[sent_format][sent_mask] = h5file.datasets[group_name]
+        datasets[group_name] = h5file.root.datasets[group_name]
 
     return h5file, datasets

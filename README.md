@@ -19,6 +19,18 @@ The model must be able to fill in the value, regardless of whether it has been t
 ### Installation
 Run all the required libraries from `requirements.txt`.
 
+### Generating Data
+Generate the data by running the `main.py` file.
+
+### Training
+Run the `train.py`.
+
+Turn on the GPU inside the Google Colab
+Zip the cse576_project_2 and unzip the file in the Google Colab.
+Inside the cse576_project_2 folder run the following commands in Google Colab.
+
 ```bash
-pip install -r requirements.txt
+!pip install -r requirements.txt
+!python main.py generate_dataset random 1000 --rewrite 1
+!python train.py
 ```
