@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 15 15:58:25 2021
-
-@author: knaik4
-"""
-
+"""Source: https://github.com/Shivanandroy/simpleT5/blob/main/simplet5/simplet5.py"""
 import torch
 import numpy as np
 import pandas as pd
