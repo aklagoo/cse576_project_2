@@ -13,19 +13,19 @@ from typing import List
 
 
 def format_1(task_name: str, nums: List[int], target: int) -> str:
-    """Returns a sentence with format 1 and target value.
-
+    """Returns a sentence with format 1.
+    
     Example:
-        The maximum value among 1, 2, 3, 4, and 5 ?.
+        The maximum value among 1, 2, 3, 4, and 5 is 5.
     """
     # Stringify the list.
     nums_str = ", ".join([str(num) for num in nums[:-1]]) + ", and " + str(nums[-1])
 
     # Generate the sentence
-    sentence = "The {task} value among {nums_str} ?.".format(
-        task=task_name, nums_str=nums_str
+    sentence = "The {task} value among {nums_str} is {target}.".format(
+        task=task_name, nums_str=nums_str, target=target
     )
-    return sentence,target
+    return sentence
 
 def format_2(task_name: str, nums: List[int], target: int) -> str:
     """Returns a sentence with format 2.

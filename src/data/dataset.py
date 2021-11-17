@@ -105,8 +105,8 @@ def _generate_samples_all(
         for combination in combinations:
             # Generate samples for combination
             target = config.TASKS[task_name](combination)
-            sentence,target_val = formats.formats[sent_format](task_name, combination, target)
-            samples = masks.masks[sent_mask](sentence,target_val)
+            sentence = formats.formats[sent_format](task_name, combination, target)
+            samples = masks.masks[sent_mask](sentence)
 
             # Write samples to table
             for sample in samples:
@@ -185,8 +185,8 @@ def _generate_samples_random(
 
         # Generate samples for combination
         target = config.TASKS[task_name](nums)
-        sentence,target_val = formats.formats[sent_format](task_name, nums, target)
-        samples = masks.masks[sent_mask](sentence,target_val)
+        sentence = formats.formats[sent_format](task_name, nums, target)
+        samples = masks.masks[sent_mask](sentence)
         # Yield a single sample
         yield random.choice(list(samples))
 

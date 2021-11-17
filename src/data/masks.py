@@ -20,11 +20,11 @@ def mask_one_digit(sentence: str) -> Generator[Sample, None, None]:
         Masked: The maximum of 1, 2, <extra_id_0>5, 7, 8 is 35.
 
     Args:
-        sentence: A sentence to be masked and its target value.
+        sentence: A sentence to be masked.
     Returns:
         List of samples, such that each sample contains
             sent: A masked sentence.
-            targets: return the target.
+            targets: The masked part(s) of the input.
     """
     samples = []
 
@@ -37,7 +37,7 @@ def mask_one_digit(sentence: str) -> Generator[Sample, None, None]:
 
         # Replace match with mask token
         masked = sentence[:start] + config.MASK_TOKEN.format(0) + sentence[end:]
-        label = str(target)
+        label = config.MASK_TOKEN.format(0) + " " + text + " " + config.MASK_TOKEN.format(1)
 
         # Append sample
         yield Sample(sent=masked, label=label)
