@@ -1,4 +1,4 @@
-"""Source: https://github.com/Shivanandroy/simpleT5/blob/main/simplet5/simplet5.py"""
+"""Adapted from https://github.com/Shivanandroy/simpleT5/blob/main/simplet5/simplet5.py"""
 import torch
 import numpy as np
 import pandas as pd
