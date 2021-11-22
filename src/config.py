@@ -12,4 +12,4 @@ DATASET_COLS = ["feature", "label"]
 DATASET_PATH = os.path.join(cwd, "data/pretrain/dataset.h5")
 MASK_TOKEN = "<extra_id_{0}>"
 SPLIT = {'train': 0.7, 'val': 0.1, 'test': 0.2}
-DATASET_REWRITE = True
+DATASET_REWRITE = False

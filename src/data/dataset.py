@@ -37,7 +37,9 @@ def _create_tables(h5file, sent_format, sent_mask, rewrite) -> Dict[str, Table]:
     # Remove group if it exists
     if group_name in h5file.root.datasets:
         if rewrite:
-            h5file.remove_node("/datasets", group_name)
+            h5file.remove_node("/datasets", group_name, recursive=True)
+        else:
+            raise tables.NodeError(f"Group {group_name} already exists")
 
     # Create group and tables
     h5file.create_group(f"/datasets", group_name, group_name)

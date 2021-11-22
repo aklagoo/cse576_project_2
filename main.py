@@ -19,7 +19,7 @@ def run_gen_all(x):
     }
     dataset.generate_all(
         val_range=x.val_range, len_range=x.len_range, path=x.path,
-        rewrite=config.DATASET_REWRITE, sent_formats=x.sent_formats,
+        rewrite=x.rewrite, sent_formats=x.sent_formats,
         sent_masks=x.sent_masks, split=split)
 
 
@@ -40,7 +40,7 @@ def run_gen_random(x):
     # Parse rewrite
     dataset.generate_random(
         count=x.count[0], val_range=x.val_range, len_range=x.len_range,
-        path=x.path, rewrite=x.rewrite[0],
+        path=x.path, rewrite=x.rewrite,
         sent_formats=x.sent_formats, sent_masks=x.sent_masks, split=split)
 
 
@@ -60,10 +60,12 @@ def setup_parsers():
     cmd_gen_all.add_argument('--val_range', nargs=2, type=int, default=config.NUMS_VAL_RANGE)
     cmd_gen_all.add_argument('--len_range', nargs=2, type=int, default=config.NUMS_LEN_RANGE)
     cmd_gen_all.add_argument('--path', nargs=1, type=str, default=config.DATASET_PATH)
-    cmd_gen_all.add_argument('--rewrite', nargs=1, type=bool, default=[config.DATASET_REWRITE])
+    cmd_gen_all.add_argument('--rewrite', default=config.DATASET_REWRITE,
+                             action='store_false' if config.DATASET_REWRITE else 'store_true')
     cmd_gen_all.add_argument('--sent_formats', nargs='*', type=str, default='all')
     cmd_gen_all.add_argument('--sent_masks', nargs='*', type=str, default='all')
-    cmd_gen_all.add_argument('--split', nargs=3, type=int, default=(config.SPLIT['train'], config.SPLIT['val'], config.SPLIT['test']))
+    cmd_gen_all.add_argument('--split', nargs=3, type=int, default=(config.SPLIT['train'], config.SPLIT['val'],
+                                                                    config.SPLIT['test']))
 
     # Add options for generate_random
     cmd_gen_all = cmd_gen_types.add_parser('random')
@@ -72,7 +74,8 @@ def setup_parsers():
     cmd_gen_all.add_argument('--val_range', nargs=2, type=int, default=config.NUMS_VAL_RANGE)
     cmd_gen_all.add_argument('--len_range', nargs=2, type=int, default=config.NUMS_LEN_RANGE)
     cmd_gen_all.add_argument('--path', nargs=1, type=str, default=config.DATASET_PATH)
-    cmd_gen_all.add_argument('--rewrite', nargs=1, type=bool, default=[config.DATASET_REWRITE])
+    cmd_gen_all.add_argument('--rewrite', default=config.DATASET_REWRITE,
+                             action='store_false' if config.DATASET_REWRITE else 'store_true')
     cmd_gen_all.add_argument('--sent_formats', nargs='*', type=str, default='all')
     cmd_gen_all.add_argument('--sent_masks', nargs='*', type=str, default='all')
     cmd_gen_all.add_argument('--split', nargs=3, type=int, default=(config.SPLIT['train'], config.SPLIT['val'], config.SPLIT['test']))
