@@ -259,6 +259,6 @@ def load_datasets(
     sent_formats_, sent_masks_ = _parse_params(sent_formats, sent_masks)
     for sent_format, sent_mask in product(sent_formats_, sent_masks_):
         group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format, sent_mask=sent_mask)
-        datasets[sent_format][sent_mask] = h5file.datasets[group_name]
+        datasets[sent_format][sent_mask] = h5file.root.datasets[group_name]
 
     return h5file, datasets
