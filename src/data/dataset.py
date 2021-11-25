@@ -11,6 +11,7 @@ from src import config
 import tables
 from itertools import product
 from tables.table import Table
+from tables.group import Group
 from src.data.masks import Sample
 from typing import List, Tuple, Union, Dict, Generator
 
@@ -250,7 +251,33 @@ def generate_random(
 def load_datasets(
         path: str = config.DATASET_PATH,
         sent_formats: Union[str, List[str]] = 'all',
-        sent_masks: Union[str, List[str]] = 'all') -> (tables.File, Dict[str, Table]):
+        sent_masks: Union[str, List[str]] = 'all') -> (tables.File, Dict[str, Group]):
+    """Loads an HDF5 file and returns the required datasets.
+
+    Example:
+        `
+        h5file, tables = load_dataset(sent_formats='format_1', sent_masks='mask_1d')
+
+        # Accessing datasets
+        train_dataset = tables['format_1_mask_1d']['train']
+        val_dataset = tables['format_1_mask_1d']['val']
+        test_dataset = tables['format_1_mask_1d']['test']
+        ...
+        `
+
+    Args:
+         path: Path to the dataset. Optional.
+         sent_formats: One or more sentence formats. Must be passed as a list
+             if more than one.
+        sent_masks: One or more masking functions. Must be passed as a list if
+             more than one.
+
+    Returns:
+        h5file: File-like object accessing the dataset.
+        datasets: Dictionary of dataset groups. The key is a format-mask pair
+            and the value is a dataset group, containing train, val, and test
+            tables.
+    """
     # Load file
     h5file = tables.open_file(path, mode="r")
 
@@ -258,7 +285,8 @@ def load_datasets(
     datasets = {}
     sent_formats_, sent_masks_ = _parse_params(sent_formats, sent_masks)
     for sent_format, sent_mask in product(sent_formats_, sent_masks_):
-        group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format, sent_mask=sent_mask)
-        datasets[sent_format][sent_mask] = h5file.root.datasets[group_name]
+        group_name = "{sent_format}_{sent_mask}".format(sent_format=sent_format,
+                                                        sent_mask=sent_mask)
+        datasets[group_name] = h5file.root.datasets[group_name]
 
     return h5file, datasets
