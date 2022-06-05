@@ -1,6 +1,6 @@
 # Out-of-Distribution Generalization of Min/Max Operations
 ## Description
-The project aims to train generalized models that work on out-of-order datasets.
+The project aims to train generalized models that work on out-of-distribution datasets.
 The task is simple: pick the largest/smallest number from a list of numbers. 
 Let's say the sentence is as follows:
 
